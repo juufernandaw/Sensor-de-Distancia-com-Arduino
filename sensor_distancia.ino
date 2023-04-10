@@ -9,7 +9,7 @@ void setup() {
   pinMode(trig, OUTPUT); // Trig = saída
   pinMode(echo, INPUT); // Echo = entrada
   Serial.begin(9600); // Inicia a taxa de velocidade
-  pinMode(LED,OUTPUT); // Led = saída
+  pinMode(LED, OUTPUT); // Led = saída
 }
 
 void loop() {
