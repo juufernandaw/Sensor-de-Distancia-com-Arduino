@@ -1,29 +1,29 @@
 // declara os pinos e as variáveis
-const int trigPin = 12;  //D6
-const int echoPin = 13;  //D7
+const int trig = 12;  // D6
+const int echo = 13;  // D7
 long duration;
 int distance;
-int LED_PIN = 14; //D5
+int LED = 14; // D5
 
 void setup() {
-  pinMode(trigPin, OUTPUT); // Trigpin = saída
-  pinMode(echoPin, INPUT); // Echopin = entrada
+  pinMode(trig, OUTPUT); // Trig = saída
+  pinMode(echo, INPUT); // Echo = entrada
   Serial.begin(9600); // Inicia a taxa de velocidade
-  pinMode(LED_PIN,OUTPUT); // Led = saída
+  pinMode(LED,OUTPUT); // Led = saída
 }
 
 void loop() {
-  // Clears the trigPin
-  digitalWrite(trigPin, LOW);
+  // Limpa o trig
+  digitalWrite(trig, LOW);
   delayMicroseconds(2);
 
-  // Ao iniciar já liga o trigpin por 10 microsegundos
-  digitalWrite(trigPin, HIGH);
+  // Ao iniciar já liga o trig por 10 microsegundos
+  digitalWrite(trig, HIGH);
   delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
+  digitalWrite(trig, LOW);
 
-  // Faz a leitura da echopin
-  duration = pulseIn(echoPin, HIGH);
+  // Faz a leitura da echo
+  duration = pulseIn(echo, HIGH);
 
   // Calcula a distancia
   distance= duration*0.034/2;
@@ -33,10 +33,10 @@ void loop() {
   delay(800);
 
   if(distance<100) { // Se o valor for menor que 150 o LED é acionado
-    digitalWrite(LED_PIN, HIGH); // LED liga
+    digitalWrite(LED, HIGH); // LED liga
 
   } else {
-    digitalWrite(LED_PIN, LOW); // Led desliga
+    digitalWrite(LED, LOW); // Led desliga
   }
   
 }
