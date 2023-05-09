@@ -1,159 +1,99 @@
-// #include <ESP8266WiFi.h>
-// #include <HTTPClient.h>
+// ############# LIBRARIES ############### //
 
 #include <ESP8266WiFi.h>
-#include <WiFiClient.h> 
-#include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
 
+// ############# VARIABLES ############### //
 
-#ifndef STASSID
-#define STASSID "Juliaa"
-#define STAPSK "julia2828"
-#endif
+const char* SSID = "SmeTeste"; // rede wifi
+const char* PASSWORD = "npaz5072"; // senha da rede wifi
 
-const char* ssid = STASSID;
-const char* password = STAPSK;
+String BASE_URL = "http://127.0.0.1:3000/";// como passar o ip localhost o ip ta errado
 
-const char* host = "192.168.74.171";
-const uint16_t port = 3000;
+// ############# PROTOTYPES ############### //
 
-const int trig = 12;  // D6
-const int echo = 13;  // D7
-long duration;
-int distance;
-int LED = 14; // D5
+void initSerial();
+void initWiFi();
+void httpRequest(String path);
 
+// ############### OBJECTS ################# //
+
+WiFiClient client;
+HTTPClient http;
+
+// ############## SETUP ################# //
 
 void setup() {
-  pinMode(trig, OUTPUT); // Trig = saída
-  pinMode(echo, INPUT); // Echo = entrada
-  Serial.begin(9600); // Inicia a taxa de velocidade
-  pinMode(LED, OUTPUT); // Led = saída
-  Serial.begin(115200);
-
-  // We start by connecting to a WiFi network
-
-  Serial.println();
-  Serial.println();
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
-
-  /* Explicitly set the ESP8266 to be a WiFi-client, otherwise, it by default,
-     would try to act as both a client and an access-point and could cause
-     network-issues with your other WiFi-devices on your WiFi-network. */
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-
-  Serial.println("");
-  Serial.println("WiFi connected");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
+  initSerial();
+  initWiFi();
 }
 
+// ############### LOOP ################# //
 
 void loop() {
-  // Limpa o trig
-  digitalWrite(trig, LOW);
-  delayMicroseconds(2);
+  Serial.println("[GET] /sensors - sending request...");
+  Serial.println("");
 
-  // Ao iniciar já liga o trig por 10 microsegundos
-  digitalWrite(trig, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trig, LOW);
+  httpRequest("distance"); //rota
 
-  // Faz a leitura da echo
-  duration = pulseIn(echo, HIGH);
+  Serial.println("");
+  delay(1000);
 
-  // Calcula a distancia
-  distance= duration*0.034/2;
-  
-  Serial.print("Distance: ");
-  Serial.println(distance);
-  delay(800);
+}
 
-  if(distance<100) { // Se o valor for menor que 150 o LED é acionado
-    digitalWrite(LED, HIGH); // LED liga
+// ############# HTTP REQUEST ################ //
 
-  } else {
-    digitalWrite(LED, LOW); // Led desliga
-  }
-  
-  static bool wait = false;
+void httpRequest(String path)
+{
+  String payload = makeRequest(path);
 
-  Serial.print("connecting to ");
-  Serial.print(host);
-  Serial.print(':');
-  Serial.println(port);
-
-  // Use WiFiClient class to create TCP connections
-  WiFiClient client;
-  if (!client.connect(host, port)) {
-    Serial.println("connection failed");
-    delay(5000);
+  if (!payload) {
     return;
   }
 
-  // This will send a string to the server
-  Serial.println("sending data to server");
-  if (client.connected()) { client.println("hello from ESP8266"); }
+  Serial.println("##[RESULT]## ==> " + payload);
 
-  // wait for data to be available
-  unsigned long timeout = millis();
-  while (client.available() == 0) {
-    if (millis() - timeout > 5000) {
-      Serial.println(">>> Client Timeout !");
-      client.stop();
-      delay(60000);
-      return;
-    }
+}
+
+String makeRequest(String path)
+{
+  http.begin(client, BASE_URL);
+  int httpCode = http.POST("asdfghjkl:senha");// como interporlar para mandar em json, nome:senha como mandar um json no post
+
+  if (httpCode < 0) {
+    Serial.println("request error - " + httpCode);
+    return "";
+
   }
 
-  // Read all the lines of the reply from server and print them to Serial
-  Serial.println("receiving from remote server");
-  // not testing 'client.connected()' since we do not need to send data here
-  while (client.available()) {
-    char ch = static_cast<char>(client.read());
-    Serial.print(ch);
+  if (httpCode != HTTP_CODE_OK) {
+    return "";
   }
 
-  // Close the connection
-  Serial.println();
-  Serial.println("closing connection");
-  client.stop();
-
-  if (wait) {
-    delay(3000);  // execute once every 5 minutes, don't flood remote service
-  }
-  wait = true;
-
-  HTTPClient http;
-
-  // URL do servidor local
-  String serverURL = "http://localhost:3000";
-
-  // Inicializa a conexão com o servidor
-  http.begin(client, serverURL);
-
-  // Envio da requisição GET para o servidor
-  int httpResponseCode = http.GET();
-
-  if (httpResponseCode > 0) {
-    Serial.print("Código de resposta do servidor: ");
-    Serial.println(httpResponseCode);
-
-    String payload = http.getString();
-    Serial.println("Resposta do servidor:");
-    Serial.println(payload);
-  } else {
-    Serial.print("Falha na conexão ao servidor. Código de erro: ");
-    Serial.println(httpResponseCode);
-  }
-
+  String response =  http.getString();
   http.end();
+
+  return response;
+}
+
+// ###################################### //
+
+// implementacao dos prototypes
+
+void initSerial() {
+  Serial.begin(115200);
+}
+
+void initWiFi() {
+  delay(10);
+  Serial.println("Conectando-se em: " + String(SSID));
+
+  WiFi.begin(SSID, PASSWORD);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(100);
+    Serial.print(".");
+  }
+  Serial.println();
+  Serial.print("Conectado na Rede " + String(SSID) + " | IP => ");
+  Serial.println(WiFi.localIP());
 }
