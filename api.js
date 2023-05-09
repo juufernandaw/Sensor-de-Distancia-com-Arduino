@@ -15,7 +15,9 @@ app.get('/books', (req, res) => {
 // POST request to add a new book
 // db contex mongo vai aqui para salvar o que vem do arduino
 app.post('/distance', (req, res) => {
-  const {distancia} = req.body; //conteudo da requisição
+  let body = req.body; //conteudo da requisição
+  console.log(body.distancia);
+  console.log(body.nome);
   //const {data_hora} = current_datetime = datetime.datetime.now();/
   distancias.push(distancia);
   //datas.push(data_hora);
