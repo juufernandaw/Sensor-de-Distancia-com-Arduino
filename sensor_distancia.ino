@@ -5,9 +5,9 @@
 
 WiFiClient client;
 
-const char* ssid = "CASA CINZA";
+const char* ssid = "Juliaa";
 const char* password = "cinzacasa";
-const char* serverName = "http://192.168.100.11:3000/distance";
+const char* serverName = "http://192.168.250.236:3000/distance";
 const int trig = 12;
 const int echo = 13;
 const int LED = 14;
@@ -21,14 +21,14 @@ void setup() {
   Serial.begin(9600);
   
   WiFi.begin(ssid, password);
-  Serial.println("Conectando com o WiFi...");
+  Serial.println("Conectando com a rede WIFI...");
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
-    Serial.println("Conectando com o WiFi...");
+    Serial.println("Conectando com a rede WIFI...");
   }
-  Serial.println("Conectado com o WiFi");
+  Serial.println("Conectado com a rede WIFI...");
 
-  Serial.print("Status do WiFi: ");
+  Serial.print("Status do WIFI: ");
   Serial.println(WiFi.status());
 
   Serial.print("IP: ");
@@ -64,9 +64,8 @@ void loop() {
   }
   delay(800);
 
-// enviar uma requisição HTTP POST 
   if (client.connect("192.168.100.11", 3000)) {
-    Serial.println("Conectado ao server");
+    Serial.println("Conectado ao servidor");
 
     HTTPClient http;
     http.begin(client, serverName);
@@ -75,14 +74,14 @@ void loop() {
     http.end();
 
     if (httpCode == 200) {
-      Serial.println("Distance enviado ao servidor");
+      Serial.println("Distancia enviada ao servidor!");
     } else {
-      Serial.println("Falha ao enviar o distance para o servidor");
+      Serial.println("ERRO! Não foi possível enviar a distancia para o servidor");
     }
 
     client.stop();
   } else {
-    Serial.println("Não foi possivel conectar ao servidor");
+    Serial.println("Não foi possivel conectar ao servidor remoto.");
   }
 
   delay(1000);
