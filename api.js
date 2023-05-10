@@ -7,6 +7,15 @@ app.use(bodyParser.json());
 const mongoose = require('mongoose')
 const db = `mongodb+srv://ajuliafernanda80:admin@cluster0.ypmssit.mongodb.net/`
 
+
+// Define the Mongoose schema for your collection
+const Schema = mongoose.Schema;
+const DistanceSchema = new Schema({
+  distance: Number,
+  data: Date
+});const Distance = mongoose.model('Distance', DistanceSchema);
+
+
 mongoose.connect(db, {
   useNewUrlParser: true
 }).then(() => {
@@ -14,6 +23,7 @@ mongoose.connect(db, {
 }).catch((err) => {
   console.log("Houve um erro ao se conectar ao mongoDB"+err)
 })
+
 
 app.post('/distance', (req, res) => {
   const distance = req.body.distance;
@@ -25,7 +35,18 @@ app.post('/distance', (req, res) => {
     const hora = dataAtual.getHours();
     const minutos = dataAtual.getMinutes();
     const segundos = dataAtual.getSeconds();
-    console.log(`A hora atual é: ${hora}:${minutos}:${segundos}`);
+    console.log(`A hora atual é: ${dataAtual}`);
+
+    //Salvar no BD 
+    const newDistance = new Distance({
+      distance: req.body.distance,
+      data: dataAtual // OU datetime.datetime.now()
+    }).save().then(() => {
+      console.log("Distancia salva com sucesso")
+    }).catch((err) => {
+      res.status(422).json({ message: 'OCORREU UM ERRO!' })
+      console.log("Ocorreu um erro ao salvar a distancia"+err)
+    })
     
   } else {
     console.log('Distancia maior que 100')
