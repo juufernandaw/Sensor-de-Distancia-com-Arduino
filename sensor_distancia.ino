@@ -21,17 +21,17 @@ void setup() {
   Serial.begin(9600);
   
   WiFi.begin(ssid, password);
-  Serial.println("Connecting to WiFi...");
+  Serial.println("Conectando com o WiFi...");
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
-    Serial.println("Connecting to WiFi...");
+    Serial.println("Conectando com o WiFi...");
   }
-  Serial.println("Connected to WiFi");
+  Serial.println("Conectado com o WiFi");
 
-  Serial.print("WiFi status: ");
+  Serial.print("Status do WiFi: ");
   Serial.println(WiFi.status());
 
-  Serial.print("IP address: ");
+  Serial.print("IP: ");
   Serial.println(WiFi.localIP());
 
 }
@@ -64,8 +64,9 @@ void loop() {
   }
   delay(800);
 
+// enviar uma requisição HTTP POST 
   if (client.connect("192.168.100.11", 3000)) {
-    Serial.println("Connected to server");
+    Serial.println("Conectado ao server");
 
     HTTPClient http;
     http.begin(client, serverName);
@@ -74,14 +75,14 @@ void loop() {
     http.end();
 
     if (httpCode == 200) {
-      Serial.println("Distance sent to server");
+      Serial.println("Distance enviado ao servidor");
     } else {
-      Serial.println("Failed to send distance to server");
+      Serial.println("Falha ao enviar o distance para o servidor");
     }
 
     client.stop();
   } else {
-    Serial.println("Could not connect to server");
+    Serial.println("Não foi possivel conectar ao servidor");
   }
 
   delay(1000);

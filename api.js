@@ -8,14 +8,14 @@ const mongoose = require('mongoose')
 const db = `mongodb+srv://ajuliafernanda80:admin@cluster0.ypmssit.mongodb.net/`
 
 
-// Define the Mongoose schema for your collection
+// Define the Mongoose schema
 const Schema = mongoose.Schema;
 const DistanceSchema = new Schema({
   distance: Number,
   data: Date
 });const Distance = mongoose.model('Distance', DistanceSchema);
 
-
+// Conecta com o BD
 mongoose.connect(db, {
   useNewUrlParser: true
 }).then(() => {
@@ -24,7 +24,7 @@ mongoose.connect(db, {
   console.log("Houve um erro ao se conectar ao mongoDB"+err)
 })
 
-
+// Post do servidor e Mandar para o BD
 app.post('/distance', (req, res) => {
   const distance = req.body.distance;
   console.log(`Distância recebida: ${distance}`);
@@ -37,7 +37,7 @@ app.post('/distance', (req, res) => {
     //Salvar no BD 
     const newDistance = new Distance({
       distance: req.body.distance,
-      data: timestamp // OU datetime.datetime.now()
+      data: timestamp
     }).save().then(() => {
       console.log("Distancia salva com sucesso")
     }).catch((err) => {
@@ -53,30 +53,3 @@ app.post('/distance', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
-// const express = require('express');
-// const app = express();
-// const port = 3000;
-// const distancias = [];
-// const datas = [];
-// const distancia = [];
-
-// // Middleware to parse JSON requests
-// app.use(express.json());
-
-// // db contex mongo vai aqui para salvar o que vem do arduino
-// app.post('/distance', (req, res) => {
-//   let body = req.body; //conteudo da requisição
-//   console.log(body);
-//   // console.log(body.distancia);
-//   // console.log(body.nome);
-//   //const {data_hora} = current_datetime = datetime.datetime.now();/
-//   distancias.push(body);
-//   //datas.push(data_hora);
-//   return res.json(distancia);
-  
-// });
-
-// // Start the server
-// app.listen(port, () => {
-//   console.log(`Server running at http://localhost:${port}`);
-// });
