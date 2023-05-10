@@ -84,7 +84,7 @@ void loop() {
     Serial.println("Could not connect to server");
   }
 
-  delay(5000);
+  delay(1000);
 }
 // #include <ESP8266WiFi.h>
 // #include <ESP8266HTTPClient.h>
