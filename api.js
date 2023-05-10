@@ -32,15 +32,12 @@ app.post('/distance', (req, res) => {
   res.send('Distância recebida com sucesso!');
   if (distance < 100){
     const dataAtual = new Date();
-    const hora = dataAtual.getHours();
-    const minutos = dataAtual.getMinutes();
-    const segundos = dataAtual.getSeconds();
-    console.log(`A hora atual é: ${dataAtual}`);
-
+    const timestamp = dataAtual.getTime();
+    console.log(timestamp); // Example output: 1659052496123
     //Salvar no BD 
     const newDistance = new Distance({
       distance: req.body.distance,
-      data: dataAtual // OU datetime.datetime.now()
+      data: timestamp // OU datetime.datetime.now()
     }).save().then(() => {
       console.log("Distancia salva com sucesso")
     }).catch((err) => {
