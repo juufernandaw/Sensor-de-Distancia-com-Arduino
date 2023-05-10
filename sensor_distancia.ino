@@ -1,35 +1,43 @@
 #include <ESP8266WiFi.h>
+#include <WiFiClient.h>
 #include <ESP8266HTTPClient.h>
 
-const char* SSID = "CASA CINZA";
-const char* PASSWORD = "cinzacasa";
-const char* BASE_URL = "http://192.168.100.11:3000/distance";
+
+WiFiClient client;
+
+const char* ssid = "CASA CINZA";
+const char* password = "cinzacasa";
+const char* serverName = "http://192.168.100.11:3000/distance";
 const int trig = 12;
 const int echo = 13;
 const int LED = 14;
 long duration;
 int distance;
 
-WiFiClient client;
-HTTPClient http;
-
 void setup() {
   pinMode(trig, OUTPUT);
   pinMode(echo, INPUT);
   pinMode(LED, OUTPUT);
-  Serial.begin(115200);
-  WiFi.begin(SSID, PASSWORD);
+  Serial.begin(9600);
+  
+  WiFi.begin(ssid, password);
+  Serial.println("Connecting to WiFi...");
   while (WiFi.status() != WL_CONNECTED) {
-    delay(100);
-    Serial.print(".");
+    delay(1000);
+    Serial.println("Connecting to WiFi...");
   }
-  Serial.println();
-  Serial.print("Connected to " + String(SSID) + " | IP => ");
+  Serial.println("Connected to WiFi");
+
+  Serial.print("WiFi status: ");
+  Serial.println(WiFi.status());
+
+  Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
+
 }
 
 void loop() {
-  // Limpa o trig
+    // Limpa o trig
   digitalWrite(trig, LOW);
   delayMicroseconds(2);
 
@@ -55,26 +63,106 @@ void loop() {
     digitalWrite(LED, LOW); // Led desliga
   }
   delay(800);
-  digitalWrite(LED, distance < 100 ? HIGH : LOW);
-  httpRequest();
-  delay(1000);
-}
 
-void httpRequest() {
-  String payload = "{\"distance\": " + String(distance) + "}";
-  http.begin(client, BASE_URL);
-  int httpCode = http.POST(payload);
-  if (httpCode < 0) {
-    Serial.println("request error - " + httpCode);
-    return;
+  if (client.connect("192.168.100.11", 3000)) {
+    Serial.println("Connected to server");
+
+    HTTPClient http;
+    http.begin(client, serverName);
+    http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+    int httpCode = http.POST("distance=" + String(distance));
+    http.end();
+
+    if (httpCode == 200) {
+      Serial.println("Distance sent to server");
+    } else {
+      Serial.println("Failed to send distance to server");
+    }
+
+    client.stop();
+  } else {
+    Serial.println("Could not connect to server");
   }
-  if (httpCode != HTTP_CODE_OK) {
-    return;
-  }
-  String response = http.getString();
-  http.end();
-  Serial.println("##[RESULT]## ==> " + response);
+
+  delay(5000);
 }
+// #include <ESP8266WiFi.h>
+// #include <ESP8266HTTPClient.h>
+
+// const char* SSID = "CASA CINZA";
+// const char* PASSWORD = "cinzacasa";
+// const char* BASE_URL = "http://192.168.100.11:3000/distance";
+// const int trig = 12;
+// const int echo = 13;
+// const int LED = 14;
+// long duration;
+// int distance;
+
+// WiFiClient client;
+// HTTPClient http;
+
+// void setup() {
+//   pinMode(trig, OUTPUT);
+//   pinMode(echo, INPUT);
+//   pinMode(LED, OUTPUT);
+//   Serial.begin(115200);
+//   WiFi.begin(SSID, PASSWORD);
+//   while (WiFi.status() != WL_CONNECTED) {
+//     delay(100);
+//     Serial.print(".");
+//   }
+//   Serial.println();
+//   Serial.print("Connected to " + String(SSID) + " | IP => ");
+//   Serial.println(WiFi.localIP());
+// }
+
+// void loop() {
+//   // Limpa o trig
+//   digitalWrite(trig, LOW);
+//   delayMicroseconds(2);
+
+//     // Ao iniciar já liga o trig por 10 microsegundos
+//   digitalWrite(trig, HIGH);
+//   delayMicroseconds(10);
+//   digitalWrite(trig, LOW);
+
+//     // Faz a leitura da echo
+//   duration = pulseIn(echo, HIGH);
+
+//     // Calcula a distancia
+//   distance= duration*0.034/2;
+    
+//   Serial.print("Distance: ");
+//   Serial.println(distance);
+//   delay(800);
+
+//   if(distance<100) { // Se o valor for menor que 150 o LED é acionado
+//     digitalWrite(LED, HIGH); // LED liga
+
+//   } else {
+//     digitalWrite(LED, LOW); // Led desliga
+//   }
+//   delay(800);
+//   digitalWrite(LED, distance < 100 ? HIGH : LOW);
+//   httpRequest();
+//   delay(1000);
+// }
+
+// void httpRequest() {
+//   String payload = "{\"distance\": " + String(distance) + "}";
+//   http.begin(client, BASE_URL);
+//   int httpCode = http.POST(payload);
+//   if (httpCode < 0) {
+//     Serial.println("request error - " + httpCode);
+//     return;
+//   }
+//   if (httpCode != HTTP_CODE_OK) {
+//     return;
+//   }
+//   String response = http.getString();
+//   http.end();
+//   Serial.println("##[RESULT]## ==> " + response);
+// }
 // // ############# LIBRARIES ############### //
 
 // #include <ESP8266WiFi.h>
