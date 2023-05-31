@@ -13,7 +13,8 @@ const Schema = mongoose.Schema;
 const DistanceSchema = new Schema({
   distance: Number,
   data: Date
-});const Distance = mongoose.model('Distance', DistanceSchema);
+});
+const Distance = mongoose.model('Distance', DistanceSchema);
 
 // Conecta com o BD
 mongoose.connect(db, {
@@ -49,6 +50,11 @@ app.post('/distance', (req, res) => {
     console.log('Distancia maior que 100')
   }
 });
+
+app.get('/distance', async (req, res) => {
+  const lastDistance = await Distance.find().sort({ data: -1 }).limit(1)
+  return res.send(lastDistance)
+})
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
