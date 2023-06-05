@@ -12,7 +12,7 @@ export default function App() {
   const fetchDistance = async() => {
     //mesmo ip do arduino *lembrete para o teste.
     // data porque é um atributo que vem do response (get)
-    const {data} = await axios.get("http://192.168.100.11:3000/distance")
+    const {data} = await axios.get("http://192.168.224.236:3000/distance")
     setDistance(data[0]) // atualizando o estado
   }
   //Primeira coisa que vai ser rodada assim que entra no app
@@ -28,17 +28,20 @@ export default function App() {
  
   return (
     <View style={styles.container}>
-      <Text>It's a start of something new</Text>
-      {
-        distance !== null ? ( // não tirar porque a primeira vez rodando é null
-          <>
-          <Text> Alguém chegou perto! Ultima distancia</Text>
-          <Text> {distance.distance} cm! </Text>
-          <Text> A data foi: {distance.data}</Text>
-          </>
-        
-        ):(null)
-      }
+      <Text style={styles.heading}>Alerta de Segurança! Veja Abaixo</Text>
+      {distance !== null ? (
+        <>
+          <View style={styles.messageContainer}>
+            <Text style={styles.message}>
+              Alguém chegou perto! Última distância
+            </Text>
+            <Text style={styles.distance}>{distance.distance} cm!</Text>
+            <Text style={styles.date}>A data foi: {distance.data}</Text>
+          </View>
+        </>
+      ) : (
+        null
+      )}
       <StatusBar style="auto" />
     </View>
   );
@@ -47,8 +50,38 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F1F5FD',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 20,
+  },
+  heading: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: '#007AFF',
+  },
+  messageContainer: {
+    borderWidth: 2,
+    borderColor: '#0050A0',
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 20,
+    backgroundColor: '#D7E6F9',
+  },
+  message: {
+    fontSize: 16,
+    color: '#007AFF',
+    marginBottom: 5,
+  },
+  distance: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#007AFF',
+    marginBottom: 5,
+  },
+  date: {
+    fontSize: 16,
+    color: '#007AFF',
   },
 });
