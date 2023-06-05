@@ -56,6 +56,11 @@ app.get('/distance', async (req, res) => {
   return res.send(lastDistance)
 })
 
+app.get('/distanceall', async (req, res) => {
+  const lastDistance = await Distance.find()
+  return res.send(lastDistance)
+})
+
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });

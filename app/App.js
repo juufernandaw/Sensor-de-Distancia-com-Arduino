@@ -7,7 +7,6 @@ export default function App() {
   //Estado use--> funcao react que cria um estado (estado é: Forma de conseguir mostrar informações dinâmicas na tela , sem estado ele não muda) SÓ ATUALIZA POR SER ESTADO
   //null --> valor inicial da distance por que é um objeto que esta sendo acessado;
   const [distance, setDistance] = useState(null)
-
   //funcao buscar no servidor
   const fetchDistance = async() => {
     //mesmo ip do arduino *lembrete para o teste.
