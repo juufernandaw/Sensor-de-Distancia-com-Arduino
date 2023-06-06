@@ -11,7 +11,7 @@ export default function App() {
   const fetchDistance = async() => {
     //mesmo ip do arduino *lembrete para o teste.
     // data porque é um atributo que vem do response (get)
-    const {data} = await axios.get("http://192.168.224.236:3000/distance")
+    const {data} = await axios.get("http://192.168.100.11:3000/distance")
     setDistance(data[0]) // atualizando o estado
   }
   //Primeira coisa que vai ser rodada assim que entra no app

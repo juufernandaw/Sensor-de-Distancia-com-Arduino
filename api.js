@@ -56,9 +56,9 @@ app.get('/distance', async (req, res) => {
   return res.send(lastDistance)
 })
 
-app.get('/distanceall', async (req, res) => {
-  const lastDistance = await Distance.find()
-  return res.send(lastDistance)
+app.get('/distance/all', async (req, res) => {
+  const AllDistance = await Distance.find()
+  return res.send(AllDistance)
 })
 
 app.listen(PORT, () => {
